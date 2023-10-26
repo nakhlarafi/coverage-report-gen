@@ -33,6 +33,7 @@ public class InvokeStaticInstrumenter extends BodyTransformer {
 		Iterator<Unit> stmtIt = units.snapshotIterator();
 
 		int totalStatements = 0; // Variable to store total number of statements for the method
+		int sequenceNumber = 0;
 		while (stmtIt.hasNext()) {
 			Stmt stmt = (Stmt) stmtIt.next();
 
@@ -49,7 +50,9 @@ public class InvokeStaticInstrumenter extends BodyTransformer {
 				continue;
 			}
 
-			String stmtId = stmt.toString();
+//			String stmtId = stmt.toString();
+			String stmtId = stmt.toString() + "_" + sequenceNumber;
+			sequenceNumber++;
 
 			// Mark the statement as executed
 			InvokeExpr markExecutedExpr = Jimple.v().newStaticInvokeExpr(markExecuted.makeRef(), StringConstant.v(methodName), StringConstant.v(stmtId));

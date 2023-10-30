@@ -13,6 +13,11 @@ import java.nio.file.StandardOpenOption;
 import java.util.*;
 
 public class InvokeStaticInstrumenter extends BodyTransformer {
+
+	private static final String REPORTS_DIRECTORY = "reports";
+	private static final String STATEMENT_COUNTS_FILE = REPORTS_DIRECTORY + "/methodStatementCounts.txt";
+	private static final String BRANCH_COUNTS_FILE = REPORTS_DIRECTORY + "/methodBranchCounts.txt";
+
 	private static boolean initialized = false;
 	static SootClass counterClass;
 	static SootMethod markExecuted, reportCounter, markBranch;
@@ -56,24 +61,8 @@ public class InvokeStaticInstrumenter extends BodyTransformer {
 				totalBranches += 2;  // Increment the branch count
 			}
 		}
-
-		writeToFile("methodStatementCounts.txt", methodName, totalStatements);
-		writeToFile("methodBranchCounts.txt", methodName, totalBranches);
-//		// Search for the return statement
-//		Stmt returnStmt = null;
-//		for (Unit unit : units) {
-//			if (unit instanceof ReturnStmt || unit instanceof ReturnVoidStmt) {
-//				returnStmt = (Stmt) unit;
-//				break;
-//			}
-//		}
-//
-//		// Add the report() method call immediately before the return statement
-//		if (returnStmt != null) {
-//			StaticInvokeExpr invokeExpr = Jimple.v().newStaticInvokeExpr(reportCounter.makeRef());
-//			InvokeStmt invokeStmt = Jimple.v().newInvokeStmt(invokeExpr);
-//			units.insertBefore(invokeStmt, returnStmt);
-//		}
+		writeToFile(STATEMENT_COUNTS_FILE, methodName, totalStatements);
+		writeToFile(BRANCH_COUNTS_FILE, methodName, totalBranches);
 	}
 
 
@@ -116,7 +105,11 @@ public class InvokeStaticInstrumenter extends BodyTransformer {
 	private void writeToFile(String fileName, String methodName, int value) {
 		String data = methodName.trim() + ":" + value + "\n";
 		try {
-			Files.write(Paths.get(fileName), data.getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
+			Path path = Paths.get(fileName);
+			if (!Files.exists(path.getParent())) {
+				Files.createDirectories(path.getParent());
+			}
+			Files.write(path, data.getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -125,8 +118,8 @@ public class InvokeStaticInstrumenter extends BodyTransformer {
 	private synchronized void initialize() {
 		if (!initialized) {
 			// Remove the files if they exist
-			deleteFile("methodStatementCounts.txt");
-			deleteFile("methodBranchCounts.txt");
+			deleteFile(STATEMENT_COUNTS_FILE);
+			deleteFile(BRANCH_COUNTS_FILE);
 
 			initialized = true;
 		}
@@ -142,5 +135,4 @@ public class InvokeStaticInstrumenter extends BodyTransformer {
 			e.printStackTrace();
 		}
 	}
-
 }

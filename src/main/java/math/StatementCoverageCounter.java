@@ -18,6 +18,10 @@ public class StatementCoverageCounter {
     private static Map<String, Integer> methodTotalBranches = new HashMap<>();
     private static Map<String, Integer> methodTakenBranches = new HashMap<>();
 
+    private static final String REPORTS_DIRECTORY = "reports";
+    private static final String STATEMENT_COUNTS_FILE = REPORTS_DIRECTORY + "/methodStatementCounts.txt";
+    private static final String BRANCH_COUNTS_FILE = REPORTS_DIRECTORY + "/methodBranchCounts.txt";
+
 
     static {
         // Register JVM shutdown hook to report coverage once at the end.
@@ -55,11 +59,10 @@ public class StatementCoverageCounter {
 
     public static synchronized void report() {
         System.err.println("Statement Coverage:");
-        printCoverageReport("methodStatementCounts.txt", methodTotalStmts, methodExecutedStmts);
+        printCoverageReport(STATEMENT_COUNTS_FILE, methodTotalStmts, methodExecutedStmts);
 
         System.err.println("\nBranch Coverage:");
-//        System.out.println(methodTakenBranches);
-        printCoverageReport("methodBranchCounts.txt", methodTotalBranches, methodTakenBranches);
+        printCoverageReport(BRANCH_COUNTS_FILE, methodTotalBranches, methodTakenBranches);
     }
 
     private static void printCoverageReport(String fileName, Map<String, Integer> totalMap, Map<String, Integer> executedMap) {

@@ -36,11 +36,12 @@ git clone https://github.com/nakhlarafi/coverage-report-gen.git
 
 ### Generate Test Cases:
 
-After setting up Randoop's environment, generating JUnit test cases can be done using this single command. Assuming your current working directory is the root directory of `Subject-PA2`, run:
+After setting up Randoop's environment, generating JUnit test cases can be done using this single command. Assuming your current working directory is the root directory of `Sample`, run:
 
 ```bash
 java -classpath ${RANDOOP_JAR}:Sample/ randoop.main.Main gentests --testclass=math.Sort --time-limit=60 --junit-package-name=math --junit-output-dir=tests
 ```
+The tests can be found in the `tests` folder.
 
 #### Notes on the Randoop Parameters:
 
@@ -58,9 +59,9 @@ After generating the tests run the tests using `Junit`
 
 ### Access the results
 The generated result can be found in the `reports` folder. In the folder:
-* methodBranchCounts.txt contains the total branch counts
-* methodStatementCounts.txt contains the total statement counts
-* output.json contains the coverage result
+* `methodBranchCounts.txt` contains the total branch counts
+* `methodStatementCounts.txt` contains the total statement counts
+* `output.json` contains the coverage result
 
 The `output.json` is structured as below:
 ```json

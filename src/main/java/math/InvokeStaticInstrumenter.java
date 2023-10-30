@@ -59,7 +59,23 @@ public class InvokeStaticInstrumenter extends BodyTransformer {
 
 		writeToFile("methodStatementCounts.txt", methodName, totalStatements);
 		writeToFile("methodBranchCounts.txt", methodName, totalBranches);
+//		// Search for the return statement
+//		Stmt returnStmt = null;
+//		for (Unit unit : units) {
+//			if (unit instanceof ReturnStmt || unit instanceof ReturnVoidStmt) {
+//				returnStmt = (Stmt) unit;
+//				break;
+//			}
+//		}
+//
+//		// Add the report() method call immediately before the return statement
+//		if (returnStmt != null) {
+//			StaticInvokeExpr invokeExpr = Jimple.v().newStaticInvokeExpr(reportCounter.makeRef());
+//			InvokeStmt invokeStmt = Jimple.v().newInvokeStmt(invokeExpr);
+//			units.insertBefore(invokeStmt, returnStmt);
+//		}
 	}
+
 
 	private int instrumentStatement(Chain<Unit> units, Stmt stmt, String methodName, int sequenceNumber) {
 		String stmtId = stmt.toString() + "_" + sequenceNumber;

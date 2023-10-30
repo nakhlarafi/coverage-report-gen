@@ -19,17 +19,23 @@ public class StatementCoverageCounter {
     private static Map<String, Integer> methodTakenBranches = new HashMap<>();
 
 
+    static {
+        // Register JVM shutdown hook to report coverage once at the end.
+        Runtime.getRuntime().addShutdownHook(new Thread(StatementCoverageCounter::report));
+    }
     public static synchronized void markBranch(String methodName, String branchId, boolean taken) {
         String combinedKey = methodName + ":" + branchId + ":" + taken;
 
         if (!branchCoverageMap.containsKey(combinedKey)) {
             branchCoverageMap.put(combinedKey, taken);
-            System.out.println(combinedKey);
+//            System.out.println(combinedKey);
+//            System.out.println(methodTakenBranches.getOrDefault(methodName, 0)+1);
             methodTakenBranches.put(methodName, methodTakenBranches.getOrDefault(methodName, 0) + 1);
 
             // Only update total branches once per branch (since there are two outcomes)
             if (!branchCoverageMap.containsKey(methodName + ":" + branchId + ":true") &&
                     !branchCoverageMap.containsKey(methodName + ":" + branchId + ":false")) {
+                System.out.println(combinedKey);
                 methodTotalBranches.put(methodName, methodTotalBranches.getOrDefault(methodName, 0) + 1);
             }
         }
@@ -52,6 +58,7 @@ public class StatementCoverageCounter {
         printCoverageReport("methodStatementCounts.txt", methodTotalStmts, methodExecutedStmts);
 
         System.err.println("\nBranch Coverage:");
+//        System.out.println(methodTakenBranches);
         printCoverageReport("methodBranchCounts.txt", methodTotalBranches, methodTakenBranches);
     }
 

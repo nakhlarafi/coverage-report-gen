@@ -14,7 +14,7 @@ import org.json.JSONArray;
 
 
 public class StatementCoverageCounter {
-    private JSONObject reports = new JSONObject();
+//    private JSONObject reports = new JSONObject();
     private static Map<String, Integer> coverageMap = new HashMap<>();
     private static Map<String, Integer> methodTotalStmts = new HashMap<>();
     private static Map<String, Integer> methodExecutedStmts = new HashMap<>();

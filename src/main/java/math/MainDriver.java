@@ -20,11 +20,16 @@ public class MainDriver {
 
         // Default paths
         String defaultPath = Scene.v().defaultClassPath();
+        System.out.println("classpath " + defaultPath);
         String helperClassesPath = extractAndRemoveArg(argsList, "-helperClassesPath", "target/classes");
         String classesToInstrumentPath = extractAndRemoveArg(argsList, "-classesToInstrumentPath", "");
+        String jsonJarPath = extractAndRemoveArg(argsList, "-jsonJarPath", "lib/json-20231013.jar");
+
+        String sootClasspath = defaultPath + ":" + helperClassesPath + ":" + classesToInstrumentPath + ":" + jsonJarPath;
+        System.out.println("Soot Classpath: " + sootClasspath);
 
         // Set the soot-classpath with the paths provided
-        Options.v().set_soot_classpath(defaultPath + ":" + helperClassesPath + ":" + classesToInstrumentPath);
+        Options.v().set_soot_classpath(sootClasspath);
 
         // Add a phase to the transformer pack
         Pack jtp = PackManager.v().getPack("jtp");
@@ -42,8 +47,8 @@ public class MainDriver {
         int index = argsList.indexOf(argKey);
         if (index != -1 && argsList.size() > index + 1) {
             String value = argsList.get(index + 1);
-            argsList.remove(index + 1);  // remove value
-            argsList.remove(index);      // remove key
+            argsList.remove(index + 1);
+            argsList.remove(index);
             return value;
         }
         return defaultValue;

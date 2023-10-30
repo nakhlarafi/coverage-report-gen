@@ -1,5 +1,6 @@
 package math;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -8,8 +9,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.json.JSONObject;
+import org.json.JSONArray;
+
 
 public class StatementCoverageCounter {
+    private JSONObject reports = new JSONObject();
     private static Map<String, Integer> coverageMap = new HashMap<>();
     private static Map<String, Integer> methodTotalStmts = new HashMap<>();
     private static Map<String, Integer> methodExecutedStmts = new HashMap<>();
@@ -21,6 +26,8 @@ public class StatementCoverageCounter {
     private static final String REPORTS_DIRECTORY = "reports";
     private static final String STATEMENT_COUNTS_FILE = REPORTS_DIRECTORY + "/methodStatementCounts.txt";
     private static final String BRANCH_COUNTS_FILE = REPORTS_DIRECTORY + "/methodBranchCounts.txt";
+    private static final String FINAL_OUTPUT_FILE = REPORTS_DIRECTORY + "/output.json";
+
 
 
     static {
@@ -63,6 +70,11 @@ public class StatementCoverageCounter {
 
         System.err.println("\nBranch Coverage:");
         printCoverageReport(BRANCH_COUNTS_FILE, methodTotalBranches, methodTakenBranches);
+
+        // Write in Json File
+        writeCoverageReportToJson("Statement Coverage", STATEMENT_COUNTS_FILE, methodTotalStmts, methodExecutedStmts, FINAL_OUTPUT_FILE);
+        writeCoverageReportToJson("Branch Coverage", BRANCH_COUNTS_FILE, methodTotalBranches, methodTakenBranches, FINAL_OUTPUT_FILE);
+
     }
 
     private static void printCoverageReport(String fileName, Map<String, Integer> totalMap, Map<String, Integer> executedMap) {
@@ -108,6 +120,67 @@ public class StatementCoverageCounter {
 
         // Print the sorted rows
         reportRows.forEach(System.err::println);
+    }
+
+    private static void writeCoverageReportToJson(String type, String fileName, Map<String, Integer> totalMap, Map<String, Integer> executedMap, String outputJsonFile) {
+        JSONObject jsonReport = new JSONObject();
+
+        if (Files.exists(Paths.get(outputJsonFile))) {
+            try {
+                String content = new String(Files.readAllBytes(Paths.get(outputJsonFile)));
+                jsonReport = new JSONObject(content);
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.err.println("Failed to read existing " + outputJsonFile);
+            }
+        }
+
+        JSONObject typeReport = new JSONObject();
+
+        // Populate the total map from the file
+        try {
+            List<String> lines = Files.readAllLines(Paths.get(fileName));
+            for (String line : lines) {
+                line = line.trim();
+                int lastColonIndex = line.lastIndexOf(":");
+                if (lastColonIndex == -1) continue;
+
+                String methodName = line.substring(0, lastColonIndex).trim();
+                int totalCount = Integer.parseInt(line.substring(lastColonIndex + 1).trim());
+
+                totalMap.put(methodName, totalCount);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to read " + fileName);
+            return;
+        }
+
+        // Create report rows and populate the JSON object
+        totalMap.forEach((method, total) -> {
+            JSONObject methodReport = new JSONObject();
+            int executed = executedMap.getOrDefault(method, 0);
+            float coverage;
+            if (total == 0 && executed == 0) {
+                coverage = 0;
+            } else {
+                coverage = ((float) executed / total) * 100;
+            }
+            methodReport.put("executed", Integer.toString(executed));
+            methodReport.put("total", Integer.toString(total));
+            methodReport.put("coverage", String.format("%.2f", coverage) + "%");
+            typeReport.put(method, methodReport);
+        });
+
+        jsonReport.put(type, typeReport);
+
+        // Write JSON object to the file
+        try (FileWriter file = new FileWriter(outputJsonFile)) {
+            file.write(jsonReport.toString(4));
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to write to " + outputJsonFile);
+        }
     }
 
 }

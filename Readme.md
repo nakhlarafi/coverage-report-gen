@@ -30,7 +30,7 @@ git clone https://github.com/nakhlarafi/coverage-report-gen.git
 - `jsonJarPath`: Path to the JSON jar. The `lib` folder contains the necessary jar files.
 - The final argument is the package name of the file.
 
-![Run configuration](img/Screenshot 2023-10-30 at 5.43.05 PM.png)
+![Run configuration](img/mainFileConfig.png)
 
 ## Generating Tests with Randoop
 
@@ -54,7 +54,7 @@ java -classpath ${RANDOOP_JAR}:Sample/ randoop.main.Main gentests --testclass=ma
 ### Run the tests
 After generating the tests run the tests using `Junit`
 
-![img.png](img/Screenshot 2023-10-30 at 5.48.38 PM.png)
+![img.png](img/testFileConfig.png)
 
 ### Access the results
 The generated result can be found in the `reports` folder. In the folder:

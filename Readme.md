@@ -53,7 +53,7 @@ The tests can be found in the `tests` folder.
 - `--junit-output-dir`: Directory for the generated test cases.
 
 ### Run the tests
-After generating the tests run the tests using `Junit`
+After generating the tests run the tests using `Junit`. Make sure to make the `sootOutput` folder as library root.
 
 ![img.png](img/testFileConfig.png)
 

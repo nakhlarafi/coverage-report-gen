@@ -1,4 +1,4 @@
-# Assignment 2
+# Statement and Branch Coverage Generator Using Soot
 
 ## Instructions to Use the Tool
 
